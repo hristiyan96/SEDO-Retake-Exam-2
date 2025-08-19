@@ -1,0 +1,34 @@
+name: .NET CI
+
+on:
+  push:
+    branches:
+      - develop
+      - 'feature/*'
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Setup .NET 8 SDK
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      # Step 3: Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Step 4: Build the solution
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
+      # Step 5: Run tests
+      - name: Run unit and integration tests
+        run: dotnet test --no-build --configuration Release --verbosity normal
