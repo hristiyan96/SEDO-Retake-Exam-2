@@ -21,19 +21,22 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # 3. Restore dependencies
+      # 3. Restore all projects in the solution
       - name: Restore dependencies
         run: dotnet restore Homies.sln
 
-      # 4. Build project
-      - name: Build project
+      # 4. Build the entire solution
+      - name: Build solution
         run: dotnet build Homies.sln --configuration Release --no-restore
 
-      # 5. Run tests
-      - name: Run tests
-        run: dotnet test Homies.sln --no-build --verbosity normal
+      # 5. Run all tests
+      - name: Run unit tests
+        run: dotnet test Homies.Tests/Homies.Tests.csproj --no-build --verbosity normal
 
-      # 6. Optional: Upload test results
+      - name: Run integration tests
+        run: dotnet test Homies.IntegrationTests/Homies.IntegrationTests.csproj --no-build --verbosity normal
+
+      # 6. Upload test results
       - name: Publish test results
         if: always()
         uses: actions/upload-artifact@v3
