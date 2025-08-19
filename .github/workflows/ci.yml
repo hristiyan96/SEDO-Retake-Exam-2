@@ -1,29 +1,42 @@
-name: .NET CI
+name: .NET 8 CI
 
 on:
   push:
     branches:
       - develop
-      - 'feature/*'
+      - feature/**
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # 1. Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x' # or your project version
+      # 2. Setup .NET 8 SDK
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
+      # 3. Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore Homies.sln
 
-    - name: Build project
-      run: dotnet build --no-restore --configuration Release
+      # 4. Build project
+      - name: Build project
+        run: dotnet build Homies.sln --configuration Release --no-restore
 
-    - name: Run tests
-      run: dotnet test --no-build --verbosity normal
+      # 5. Run tests
+      - name: Run tests
+        run: dotnet test Homies.sln --no-build --verbosity normal
+
+      # 6. Optional: Upload test results
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: TestResults
+          path: '**/TestResults/*.xml'
